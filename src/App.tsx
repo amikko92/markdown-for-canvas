@@ -1,11 +1,12 @@
-import { useRef } from "react";
+import { useState } from "react";
 import "./App.css";
 import { MarkdownFileInput } from "./MarkdownFileInput";
 import { readMarkdownFile } from "./MarkdownFileReader";
 import { markdownToHtml } from "./MarkdownToHtml";
+import { HtmlResult } from "./HtmlResult";
 
 export function App() {
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const [htmlResult, setHtmlResult] = useState("");
 
     async function parseFiles(files: FileList) {
         const file = files[0];
@@ -13,10 +14,7 @@ export function App() {
         const markdownText = await readMarkdownFile(file);
         const html = markdownToHtml(markdownText);
 
-        const textarea = textareaRef.current;
-        if (textarea) {
-            textarea.value = html;
-        }
+        setHtmlResult(html);
     }
 
     return (
@@ -25,9 +23,7 @@ export function App() {
             <p>Konvertera markdown-filer till Canvasvänlig HTML</p>
 
             <MarkdownFileInput onFilesSelected={parseFiles} />
-
-            <p>Resultat</p>
-            <textarea ref={textareaRef}></textarea>
+            <HtmlResult html={htmlResult} />
         </>
     );
 }
